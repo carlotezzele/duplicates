@@ -1,0 +1,5 @@
+.build/
+.swiftpm/
+/Doppio.app
+*.xcodeproj
+.DS_Store
