@@ -31,7 +31,11 @@ struct Fixture {
         ["accents/\(nfdName)", "accents/\(nfcCopyName)"]: "accents/\(nfdName)",
         ["hl2/a.jpg", "hl2/a copy.jpg"]: "hl2/a.jpg",
         ["clone/vacation.jpg", "clone/vacation copy.jpg"]: "clone/vacation.jpg",
+        ["dump/IMG_20221001_152443.jpg", "dump/.IMG_20221001_152443.jpg",
+         "dump/.IMG_20221001_152443_1706717647603.jpg", "dump/-1764628937-IMG_20221001_152443.jpg"]:
+            "dump/IMG_20221001_152443.jpg",
         ["raw/IMG_9999.DNG", "raw/HBIK8661.DNG"]: nil,
+        ["dump/IMG-20241227-WA0019.jpg", "dump/HKNM5184.JPG"]: nil,
         ["a/IMG_1.jpg", "b/IMG_1.jpg"]: nil,
     ]
 
@@ -109,6 +113,15 @@ struct Fixture {
         let raw = bytes(seed: 12, count: 200_000)
         try write("raw/IMG_9999.DNG", raw)
         try write("raw/HBIK8661.DNG", raw)
+
+        // Phone backup / recovery dump: hidden, timestamped and Android-trash copies.
+        let dump = bytes(seed: 25, count: 150_000)
+        for name in ["IMG_20221001_152443.jpg", ".IMG_20221001_152443.jpg",
+                     ".IMG_20221001_152443_1706717647603.jpg", "-1764628937-IMG_20221001_152443.jpg"] {
+            try write("dump/" + name, dump)
+        }
+        // Random-looking name next to a real one: ambiguous unless randomNamesAreCopies.
+        try pair("dump/IMG-20241227-WA0019.jpg", "dump/HKNM5184.JPG", seed: 26)
 
         // Same name, same content, different folders: ambiguous.
         try pair("a/IMG_1.jpg", "b/IMG_1.jpg", seed: 13)

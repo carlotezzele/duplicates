@@ -73,7 +73,7 @@ public enum AuditReport {
     // MARK: - JSON
 
     struct JSONReport: Codable {
-        struct Options: Codable { var allTypes: Bool; var jobs: Int }
+        struct Options: Codable { var allTypes: Bool; var jobs: Int; var randomNamesAreCopies: Bool }
         struct Summary: Codable {
             var groups: Int
             var autoResolvableGroups: Int
@@ -121,7 +121,8 @@ public enum AuditReport {
     static func json(_ r: ScanResult) throws -> Data {
         let report = JSONReport(
             createdAt: iso(r.finishedAt), startedAt: iso(r.startedAt), roots: r.roots.paths,
-            options: .init(allTypes: r.options.includeAllTypes, jobs: r.options.jobs),
+            options: .init(allTypes: r.options.includeAllTypes, jobs: r.options.jobs,
+                           randomNamesAreCopies: r.options.suggestionRules.randomNamesAreCopies),
             summary: .init(groups: r.groups.count, autoResolvableGroups: r.autoResolvableGroups.count,
                            ambiguousGroups: r.ambiguousGroups.count, redundantFiles: r.redundantFileCount,
                            redundantBytes: r.redundantBytes, reclaimableBytes: r.reclaimableBytes,

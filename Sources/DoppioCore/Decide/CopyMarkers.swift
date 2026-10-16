@@ -40,7 +40,18 @@ public enum CopyMarkers {
         Marker(example: "Copy of photo.jpg", position: .prefix, pattern: #"copy of "#),
         Marker(example: "Copia di foto.jpg", position: .prefix, pattern: #"copia di "#),
         Marker(example: ".photo.jpg", position: .leadingDot, pattern: #"\."#),
+        // Machine-made copies (phone backup / recovery tools). Timestamps are limited to
+        // plausible values (2017–2033) so ordinary numbers are never mistaken for them.
+        Marker(example: "IMG_1234_1706717647603.jpg (epoch ms)", position: .suffix, pattern: #"_1[5-9]\d{11}"#),
+        Marker(example: "-1764628937-IMG_1234.jpg (Android trash)", position: .prefix, pattern: #"-1[5-9]\d{8}-"#),
+        Marker(example: ".trashed-1764628937-IMG_1234.jpg", position: .prefix, pattern: #"\.trashed-1[5-9]\d{8}-"#),
+        Marker(example: "_.IMG_1234.jpg", position: .prefix, pattern: #"_\."#),
     ]
+
+    /// Opt-in rule (`SuggestionRules.randomNamesAreCopies`): names made of 4–5 letters and
+    /// 4 digits, like "NBQE3618.jpg", that some gallery/recovery apps give to copies.
+    /// Applied to the stem, after a leading dot is removed.
+    public static let randomNamePattern = #"^[a-z]{4,5}\d{4}$"#
 
     private struct Compiled: @unchecked Sendable {
         let position: Position
@@ -107,7 +118,18 @@ public enum CopyMarkers {
     /// A file is a derived copy if every one of its names, after stripping markers,
     /// matches the name of ANOTHER file in the group. The original is the single file
     /// that is not derived, and only if every other file is derived.
-    public static func originalIndex(names: [[String]]) -> Int? {
+    ///
+    /// With `randomNamesAreCopies`, a file whose every name is random-looking (see
+    /// `randomNamePattern`) counts as a copy, provided at least one file has a real name;
+    /// the original is then chosen among the real-named files by the usual rule.
+    public static func originalIndex(names: [[String]], randomNamesAreCopies: Bool = false) -> Int? {
+        if randomNamesAreCopies {
+            let real = names.indices.filter { !names[$0].allSatisfy(isRandomName) }
+            if !real.isEmpty && real.count < names.count {
+                if real.count == 1 { return real[0] }
+                return originalIndex(names: real.map { names[$0] }).map { real[$0] }
+            }
+        }
         let normalized = names.map { Set($0.map(normalize)) }
         var originals: [Int] = []
         for (i, own) in normalized.enumerated() {
@@ -117,6 +139,14 @@ public enum CopyMarkers {
             if !derived { originals.append(i) }
         }
         return originals.count == 1 ? originals[0] : nil
+    }
+
+    private static let randomName = try! NSRegularExpression(pattern: randomNamePattern) // swiftlint:disable:this force_try
+
+    public static func isRandomName(_ name: String) -> Bool {
+        var stem = splitExtension(normalize(name)).stem
+        if stem.hasPrefix(".") { stem.removeFirst() }
+        return randomName.firstMatch(in: stem, range: NSRange(stem.startIndex..., in: stem)) != nil
     }
 
     /// "photo.final.JPG" → ("photo.final", ".jpg"); names without an extension → (name, "").

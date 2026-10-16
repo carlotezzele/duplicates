@@ -69,10 +69,21 @@ public struct DuplicateGroup: Hashable, Sendable, Identifiable {
     public var spaceIsExact: Bool { files.allSatisfy(\.spaceIsExact) }
 }
 
+/// Optional extra rules for automatic suggestions. Defaults are the strict rules.
+public struct SuggestionRules: Hashable, Sendable {
+    /// Treat random-looking names ("NBQE3618.jpg") as copies of a real-named file.
+    public var randomNamesAreCopies: Bool
+
+    public init(randomNamesAreCopies: Bool = false) {
+        self.randomNamesAreCopies = randomNamesAreCopies
+    }
+}
+
 public enum Suggester {
     /// Picks the obvious original, or explains why the group needs a human.
-    public static func suggest(for files: [DuplicateFile]) -> Suggestion {
-        guard let index = CopyMarkers.originalIndex(names: files.map(\.allNames)) else {
+    public static func suggest(for files: [DuplicateFile], rules: SuggestionRules = .init()) -> Suggestion {
+        guard let index = CopyMarkers.originalIndex(names: files.map(\.allNames),
+                                                    randomNamesAreCopies: rules.randomNamesAreCopies) else {
             return .ambiguous(reason: "No single file is clearly the original")
         }
         let original = files[index]

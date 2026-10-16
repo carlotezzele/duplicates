@@ -6,11 +6,14 @@ public struct ScanOptions: Sendable {
     public var includeAllTypes: Bool
     /// Concurrent file reads. Keep low (1) for spinning external disks.
     public var jobs: Int
+    public var suggestionRules: SuggestionRules
 
-    public init(roots: [URL], includeAllTypes: Bool = false, jobs: Int = 1) {
+    public init(roots: [URL], includeAllTypes: Bool = false, jobs: Int = 1,
+                suggestionRules: SuggestionRules = .init()) {
         self.roots = roots
         self.includeAllTypes = includeAllTypes
         self.jobs = max(1, jobs)
+        self.suggestionRules = suggestionRules
     }
 }
 

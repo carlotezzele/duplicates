@@ -120,9 +120,9 @@ struct AuditTests {
 
         let report = try JSONDecoder().decode(AuditReport.JSONReport.self, from: Data(contentsOf: paths.json))
         #expect(report.summary.groups == result.groups.count)
-        #expect(report.summary.autoResolvableGroups == 14)
-        #expect(report.summary.ambiguousGroups == 2)
-        #expect(report.groups.filter { $0.suggestedKeep == "ambiguous" }.count == 2)
+        #expect(report.summary.autoResolvableGroups == 15)
+        #expect(report.summary.ambiguousGroups == 3)
+        #expect(report.groups.filter { $0.suggestedKeep == "ambiguous" }.count == 3)
         #expect(report.groups.flatMap(\.files).allSatisfy { ["keep", "trash", "review"].contains($0.suggestion) })
         #expect(report.issues.count == result.issues.count)
 
@@ -158,8 +158,8 @@ struct AuditTests {
         defer { fixture.cleanup() }
         let result = try await DuplicateFinder(options: ScanOptions(roots: [fixture.root])).run()
         let text = AuditReport.consoleSummary(result)
-        #expect(text.contains("Duplicate groups:     16"))
-        #expect(text.contains("14 auto-resolvable, 2 need your choice"))
+        #expect(text.contains("Duplicate groups:     18"))
+        #expect(text.contains("15 auto-resolvable, 3 need your choice"))
         #expect(text.contains("unreadable file"))
     }
 }

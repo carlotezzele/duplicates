@@ -32,6 +32,7 @@ macro plugin; with full Xcode, plain `swift test` works too.
 doppio audit ~/Pictures/Export /Volumes/Backup/Phone
 doppio audit /Volumes/HDD/Photos --jobs 1             # spinning disk: keep 1 (the default)
 doppio audit ~/Downloads --all-types                  # every file type, not just photos/videos
+doppio audit /Volumes/Samsung/Dump --random-names-are-copies  # see "Automatic suggestions"
 doppio audit ~/Pictures --report ~/Desktop/audit.json # writes audit.json + audit.csv
 doppio audit ~/Pictures --report ~/Desktop/reports    # folder (created if needed)
 ```
@@ -122,11 +123,20 @@ removing copy markers from its name gives the name of *another* file in the same
 | ` - Copia`, ` copia`, ` copia N` | `foto - Copia.jpg`, `foto copia 2.jpg` |
 | `Copy of `, `Copia di ` | `Copy of beach.png`, `Copia di mare.png` |
 | leading dot | `.Screenshot 2025-01-01 at 10.00.00.png` |
+| `_` + epoch-milliseconds (13 digits, 2017–2033) | `IMG_20221001_152443_1706717647603.jpg` |
+| `-` + epoch-seconds + `-` prefix (Android trash) | `-1764628937-IMG_20221001_152443.jpg` |
+| `.trashed-` + epoch-seconds + `-` prefix | `.trashed-1764628937-IMG_1234.jpg` |
+| `_.` prefix | `_.IMG-20230617-WA0085.jpg` |
 
 Matching is case-insensitive (extension included), Unicode-normalised (NFC), and markers
 can chain (`IMG_1 (1) copy.jpg`). If exactly one file is not a derived copy and all the
 others are, that file is the suggested keeper; otherwise the group is **ambiguous** and
 waits for your choice. `VID_20250822_205114.mp4` on its own is never treated as a copy.
+
+**Optional rule — `--random-names-are-copies`:** some gallery and recovery apps give
+copies random names made of 4–5 letters and 4 digits (`NBQE3618.jpg`, `RUHHE4377.JPG`).
+With this flag, such files count as copies whenever the group also has a real-named file,
+and the original is chosen among the real-named files. Off by default.
 
 To add a marker, add a row to `CopyMarkers.table` in
 `Sources/DoppioCore/Decide/CopyMarkers.swift` and a test row in `CopyMarkersTests`.

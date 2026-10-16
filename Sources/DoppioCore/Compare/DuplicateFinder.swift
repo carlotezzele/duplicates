@@ -136,7 +136,7 @@ public struct DuplicateFinder: Sendable {
                                      privateSize: privateSize, spaceIsExact: exact)
             }
             groups.append(DuplicateGroup(sha256: group.key.sha256, size: group.key.size, files: files,
-                                         suggestion: Suggester.suggest(for: files)))
+                                         suggestion: Suggester.suggest(for: files, rules: options.suggestionRules)))
             tracker.add(files: 1)
         }
         tracker.finish()

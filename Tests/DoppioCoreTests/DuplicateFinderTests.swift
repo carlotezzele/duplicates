@@ -26,8 +26,19 @@ struct DuplicateFinderTests {
         let result = try await scan(fixture)
         let found = summarize(result, fixture)
         #expect(found == Fixture.expectedGroups)
-        #expect(result.autoResolvableGroups.count == 14)
-        #expect(result.ambiguousGroups.count == 2)
+        #expect(result.autoResolvableGroups.count == 15)
+        #expect(result.ambiguousGroups.count == 3)
+    }
+
+    @Test func randomNamesAreCopiesIsOptIn() async throws {
+        let fixture = try Fixture()
+        defer { fixture.cleanup() }
+        let options = ScanOptions(roots: [fixture.root], suggestionRules: SuggestionRules(randomNamesAreCopies: true))
+        let found = summarize(try await DuplicateFinder(options: options).run(), fixture)
+        var expected = Fixture.expectedGroups
+        expected.updateValue("dump/IMG-20241227-WA0019.jpg", forKey: ["dump/IMG-20241227-WA0019.jpg", "dump/HKNM5184.JPG"])
+        expected.updateValue("raw/IMG_9999.DNG", forKey: ["raw/IMG_9999.DNG", "raw/HBIK8661.DNG"])
+        #expect(found == expected)
     }
 
     @Test func allTypesAddsNonMediaFiles() async throws {

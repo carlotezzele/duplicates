@@ -22,6 +22,9 @@ struct ScanFlags: ParsableArguments {
     @Option(name: .long, help: "Files read in parallel. Keep 1 for spinning hard disks; 2–4 for SSDs.")
     var jobs = 1
 
+    @Flag(name: .long, help: "Suggestions: treat random-looking names (e.g. NBQE3618.jpg) as copies of a real-named file.")
+    var randomNamesAreCopies = false
+
     func validate() throws {
         guard !folders.isEmpty else { throw ValidationError("Give at least one folder.") }
         guard (1...16).contains(jobs) else { throw ValidationError("--jobs must be between 1 and 16.") }
@@ -29,7 +32,8 @@ struct ScanFlags: ParsableArguments {
 
     var options: ScanOptions {
         ScanOptions(roots: folders.map { URL(fileURLWithPath: ($0 as NSString).expandingTildeInPath) },
-                    includeAllTypes: allTypes, jobs: jobs)
+                    includeAllTypes: allTypes, jobs: jobs,
+                    suggestionRules: SuggestionRules(randomNamesAreCopies: randomNamesAreCopies))
     }
 }
 
