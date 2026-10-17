@@ -61,6 +61,8 @@ struct AuditTests {
         return out
     }
 
+    static func sha(_ data: Data) -> String { SHA256.hash(data: data).hexString }
+
     static func xattrNames(_ path: String) -> [String] {
         let size = listxattr(path, nil, 0, XATTR_NOFOLLOW)
         guard size > 0 else { return [] }

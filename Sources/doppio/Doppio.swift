@@ -8,7 +8,7 @@ struct DoppioCommand: AsyncParsableCommand {
         commandName: "doppio",
         abstract: "Find exact duplicate photos and videos, safely.",
         version: Doppio.version,
-        subcommands: [AuditCommand.self]
+        subcommands: [AuditCommand.self, CleanCommand.self, RestoreCommand.self]
     )
 }
 

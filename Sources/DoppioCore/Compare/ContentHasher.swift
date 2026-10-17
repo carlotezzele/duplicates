@@ -49,8 +49,10 @@ enum ContentHasher {
 
 enum ByteComparer {
     /// Compares two files byte by byte. Both must still match their scan records.
+    /// `onChunkOfB` sees every chunk of `b` as it is read (used to hash it in the same pass).
     static func identical(_ a: FileRecord, _ b: FileRecord, cancel: CancelFlag,
-                          onBytes: (Int) -> Void) throws(FileAccessError) -> Bool {
+                          onBytes: (Int) -> Void,
+                          onChunkOfB: (UnsafeRawBufferPointer) -> Void = { _ in }) throws(FileAccessError) -> Bool {
         guard a.size == b.size else { return false }
         let fa = try OpenFile(a)
         let fb = try OpenFile(b)
@@ -65,6 +67,7 @@ enum ByteComparer {
             guard na == nb else { return false }
             if na == 0 { break }
             guard memcmp(ba.baseAddress!, bb.baseAddress!, na) == 0 else { return false }
+            onChunkOfB(UnsafeRawBufferPointer(rebasing: bb[0..<nb]))
             offset += Int64(na)
             onBytes(2 * na)
         }

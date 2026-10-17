@@ -212,7 +212,7 @@ public enum AuditReport {
 }
 
 public enum Doppio {
-    public static let version = "0.1.0"
+    public static let version = "0.2.0"
 }
 
 public func formatBytes(_ bytes: Int64) -> String {
