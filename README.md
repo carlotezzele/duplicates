@@ -4,9 +4,8 @@ A safe duplicate photo/video finder for macOS. Doppio finds files whose contents
 **100% identical** and helps you reclaim disk space without ever risking a unique file.
 Safety beats speed and convenience everywhere.
 
-> **Status: Phase 2** — scanning engine (`DoppioCore`), the read-only `doppio audit`,
-> `doppio clean` (moves copies to the Trash after you confirm) and `doppio restore`.
-> The SwiftUI app comes next.
+> **Status: Phase 3**: the scanning engine (`DoppioCore`), the `doppio` command-line tool
+> (`audit`, `clean`, `restore`) and the **Doppio app** for macOS.
 
 ## Requirements
 
@@ -20,12 +19,58 @@ Safety beats speed and convenience everywhere.
 make build          # debug build → .build/debug/doppio
 make test           # full test suite (Swift Testing)
 make install-cli    # release build → ~/.local/bin/doppio  (PREFIX=/usr/local to change)
+make app            # build/Doppio.app (SwiftPM + scripts/build-app.sh, ad-hoc signed)
+make install-app    # copies it to ~/Applications/Doppio.app
+make run-app        # builds and opens it
 ```
+
+The app is built without Xcode: `scripts/build-app.sh` compiles the `DoppioApp` target
+with SwiftPM, wraps it in a bundle with `App/Info.plist` and `App/Doppio.icns`, and signs
+it ad hoc (`codesign -s -`). The icon is drawn by `scripts/make-icon.swift`
+(`make icon` regenerates it).
+
+`make test` also runs the app's tests. To render every screen of the app to PNGs (handy
+for checking the UI without clicking through it):
+`DOPPIO_SNAPSHOTS=/tmp/doppio-snapshots make test`.
 
 `make test` adds a compiler flag that the Command Line Tools need to find Swift Testing's
 macro plugin; with full Xcode, plain `swift test` works too.
 
-## Usage
+## The app
+
+Open **Doppio.app**, drop folders or drives onto the window (or click **Choose
+Folders…**), pick the options, and click **Scan**. Scanning only reads files and can be
+cancelled at any time.
+
+The results have two tabs:
+
+- **Suggested**: groups with an obvious original. Every group is pre-checked; uncheck
+  any you want to leave alone. Expand a row to see which file is kept and which go to
+  the Trash.
+- **Needs Your Choice**: the other groups, one at a time, side by side. Each file shows
+  a Quick Look thumbnail (HEIC, RAW and video included), its folder, size, capture date,
+  and creation and modification dates. **Nothing is pre-selected.**
+
+| Key | Action (Review menu) |
+|---|---|
+| `1`–`9` | keep that file, then go to the next group |
+| `K` | keep all files in this group |
+| `→` / `←` | next / previous group |
+| Space | Quick Look the selected file (click a card to select it; double-click previews) |
+| ⌘R | reveal the selected file in Finder |
+| ⇧⌘E | export the audit report (JSON + CSV) |
+| ⌘N | new scan |
+
+**Move N Files to Trash…** opens a confirmation sheet with the totals. Nothing is moved
+until you click **Move to Trash** (it deliberately has no keyboard shortcut). The final
+screen shows what was moved and what wasn't (with reasons), and offers **Open Trash**,
+the log, the summary, and **Put Everything Back…**. Quitting while files are being moved
+waits for the current file to finish.
+
+The app uses the same `DoppioCore` code as the command line, so every safety check below
+applies to it too.
+
+## Command line
 
 ### Audit (read-only)
 
@@ -253,9 +298,13 @@ and restores it at the end.
 
 macOS protects some locations (Desktop, Documents, Downloads, external and network
 volumes, other apps' data). Without permission, files there show up as *unreadable* in
-the report — they're never guessed about. To scan them from the command line, give
-your terminal app Full Disk Access: **System Settings → Privacy & Security → Full Disk
-Access → +** and add Terminal (or iTerm, …), then restart it.
+the report — they're never guessed about.
+
+- **App:** folders you pick or drop are usually allowed after macOS asks once. For
+  everything else, add Doppio.app under **System Settings → Privacy & Security → Full
+  Disk Access**. Because the app is signed ad hoc, macOS may ask again after each rebuild.
+- **Command line:** give your terminal app Full Disk Access (same place: add Terminal,
+  iTerm, …), then restart it.
 
 ## Project layout
 
@@ -269,12 +318,16 @@ Sources/DoppioCore/   scanning, comparison, suggestions, reports (no UI)
   Log/       append-only session logs and their plain-text summaries
   Metadata/  capture date (ImageIO / AVFoundation)
 Sources/doppio/       command-line tool (swift-argument-parser)
+Sources/DoppioApp/    SwiftUI app (state in AppModel; all file changes via DoppioCore)
+App/                  Info.plist and icon for the app bundle
+scripts/              build-app.sh, make-icon.swift/.sh
 Tests/DoppioCoreTests fixture generator + tests
+Tests/DoppioAppTests  app model and flow tests, opt-in screen snapshots
 ```
 
 ## Roadmap
 
 1. ✅ Scanning + `doppio audit`
 2. ✅ Trash, logging, `doppio clean`, `doppio restore`
-3. SwiftUI app (SwiftPM + app-bundle script; no Xcode required)
+3. ✅ SwiftUI app (SwiftPM + app-bundle script; no Xcode required)
 4. Optional hash cache in `~/Library/Application Support/Doppio`

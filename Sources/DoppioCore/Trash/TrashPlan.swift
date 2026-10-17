@@ -80,6 +80,11 @@ public struct CleanSelection: Sendable {
         }
     }
 
+    /// Selects the automatic suggestion for one group; does nothing for an ambiguous group.
+    public mutating func acceptSuggestion(for group: DuplicateGroup) {
+        if let plan = TrashPlan.suggested(for: group) { plans[group.id] = plan }
+    }
+
     public mutating func keep(_ path: String, in group: DuplicateGroup) throws(PlanError) {
         plans[group.id] = try TrashPlan(group: group, keeping: path)
     }

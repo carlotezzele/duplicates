@@ -212,11 +212,14 @@ public enum AuditReport {
 }
 
 public enum Doppio {
-    public static let version = "0.2.0"
+    public static let version = "0.3.0"
 }
 
 public func formatBytes(_ bytes: Int64) -> String {
-    ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+    let formatter = ByteCountFormatter()
+    formatter.countStyle = .file
+    formatter.allowsNonnumericFormatting = false // "0 bytes", not "Zero KB"
+    return formatter.string(fromByteCount: bytes)
 }
 
 func iso(_ date: Date) -> String {

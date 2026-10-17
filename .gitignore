@@ -3,3 +3,4 @@
 /Doppio.app
 *.xcodeproj
 .DS_Store
+/build/

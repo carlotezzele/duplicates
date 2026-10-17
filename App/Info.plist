@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Doppio</string>
+	<key>CFBundleExecutable</key>
+	<string>Doppio</string>
+	<key>CFBundleIconFile</key>
+	<string>Doppio</string>
+	<key>CFBundleIdentifier</key>
+	<string>local.doppio.Doppio</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Doppio</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>__VERSION__</string>
+	<key>CFBundleVersion</key>
+	<string>__VERSION__</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.photography</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>Personal use.</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Doppio scans the folders you choose on external drives for duplicate photos and videos.</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Doppio scans the folders you choose for duplicate photos and videos.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Doppio scans the folders you choose for duplicate photos and videos.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Doppio scans the folders you choose for duplicate photos and videos.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Doppio scans the folders you choose on network volumes for duplicate photos and videos.</string>
+</dict>
+</plist>
