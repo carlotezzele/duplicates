@@ -78,7 +78,7 @@ applies to it too.
 doppio audit ~/Pictures/Export /Volumes/Backup/Phone
 doppio audit /Volumes/HDD/Photos --jobs 1             # spinning disk: keep 1 (the default)
 doppio audit ~/Downloads --all-types                  # every file type, not just photos/videos
-doppio audit /Volumes/Samsung/Dump --random-names-are-copies  # see "Automatic suggestions"
+doppio audit /Volumes/MyDisk/Photos --random-names-are-copies  # see "Automatic suggestions"
 doppio audit ~/Pictures --report ~/Desktop/audit.json # writes audit.json + audit.csv
 doppio audit ~/Pictures --report ~/Desktop/reports    # folder (created if needed)
 ```
@@ -110,7 +110,7 @@ Press **Ctrl-C** at any time: the scan stops cleanly and no report is written.
 ### Clean (moves copies to the Trash, after you confirm)
 
 ```sh
-doppio clean /Volumes/Samsung/Dump
+doppio clean /Volumes/MyDisk/Photos
 doppio clean ~/Pictures/Export /Volumes/Backup/Phone --jobs 2
 ```
 
@@ -331,3 +331,7 @@ Tests/DoppioAppTests  app model and flow tests, opt-in screen snapshots
 2. ✅ Trash, logging, `doppio clean`, `doppio restore`
 3. ✅ SwiftUI app (SwiftPM + app-bundle script; no Xcode required)
 4. Optional hash cache in `~/Library/Application Support/Doppio`
+
+## License
+
+MIT, see [LICENSE](LICENSE).
