@@ -253,6 +253,8 @@ copies random names made of 4–5 letters and 4 digits (`NBQE3618.jpg`, `RUHHE43
 With this flag, such files count as copies whenever the group also has a real-named file,
 and the original is chosen among the real-named files. Off by default.
 
+The full rule set, with the ambiguous cases, is in [docs/KEEP-RULES.md](docs/KEEP-RULES.md).
+
 To add a marker, add a row to `CopyMarkers.table` in
 `Sources/DoppioCore/Decide/CopyMarkers.swift` and a test row in `CopyMarkersTests`.
 
